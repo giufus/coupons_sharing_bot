@@ -33,6 +33,11 @@ func migrate(db *sql.DB) error {
 			updated_at TEXT NOT NULL,
 			CHECK (month IS NULL OR (month >= 1 AND month <= 12))
 		);`,
+		`CREATE TABLE IF NOT EXISTS configurations (
+			name TEXT PRIMARY KEY,
+			value TEXT NOT NULL,
+			updated_at TEXT NOT NULL
+		);`,
 		`CREATE TABLE IF NOT EXISTS coupon_stars (
 			coupon_id INTEGER NOT NULL,
 			user_id INTEGER NOT NULL,
