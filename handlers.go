@@ -66,7 +66,7 @@ func helpText() string {
 		"Notes:",
 		"- Use quotes for values with spaces, e.g. value=\"SUMMER 20\"",
 		"- search platform is case-insensitive and supports partial match",
-		"- you must provide the global PIN before add/search",
+		"- you must provide the global PIN before add/search (configured by the bot owner)",
 		"- month= clears the month (for yearly coupons)",
 		"- You can use the on-screen buttons for Add/Search/Help/Cancel",
 	}, "\n")
@@ -425,7 +425,7 @@ func handleAddFlowStep(db *sql.DB, bot *tgbotapi.BotAPI, msg *tgbotapi.Message, 
 	case 0:
 		if err := verifyGlobalPin(db, text); err != nil {
 			if err == errPinNotSet {
-				replyWithKeyboard(bot, msg, "No PIN set. Use /setpin 2512 first.", flowKeyboard(false))
+				replyWithKeyboard(bot, msg, "PIN is not configured. Ask the bot owner to set BOT_PIN or seed the DB.", flowKeyboard(false))
 				return
 			}
 			replyWithKeyboard(bot, msg, "Invalid PIN.", flowKeyboard(false))
@@ -526,7 +526,7 @@ func handleSearchFlowStep(db *sql.DB, bot *tgbotapi.BotAPI, msg *tgbotapi.Messag
 	case 0:
 		if err := verifyGlobalPin(db, text); err != nil {
 			if err == errPinNotSet {
-				replyWithKeyboard(bot, msg, "No PIN set. Use /setpin 2512 first.", flowKeyboard(false))
+				replyWithKeyboard(bot, msg, "PIN is not configured. Ask the bot owner to set BOT_PIN or seed the DB.", flowKeyboard(false))
 				return
 			}
 			replyWithKeyboard(bot, msg, "Invalid PIN.", flowKeyboard(false))
@@ -706,7 +706,7 @@ func handlePin(db *sql.DB, bot *tgbotapi.BotAPI, msg *tgbotapi.Message, args str
 	}
 	if err := verifyGlobalPin(db, pin); err != nil {
 		if err == errPinNotSet {
-			reply(bot, msg, "No PIN set in configurations.")
+			reply(bot, msg, "PIN is not configured. Ask the bot owner.")
 			return
 		}
 		reply(bot, msg, "Invalid PIN.")
@@ -730,12 +730,12 @@ func isValidPin(pin string) bool {
 func verifyPinFromKV(db *sql.DB, bot *tgbotapi.BotAPI, msg *tgbotapi.Message, kv map[string]string) bool {
 	pin := strings.TrimSpace(kv["pin"])
 	if !isValidPin(pin) {
-		reply(bot, msg, "PIN required. Example: /add pin=2512 value=... platform=... year=YYYY")
+		reply(bot, msg, "PIN required. Example: /add pin=1234 value=... platform=... year=YYYY")
 		return false
 	}
 	if err := verifyGlobalPin(db, pin); err != nil {
 		if err == errPinNotSet {
-			reply(bot, msg, "No PIN set. Use /setpin 2512 first.")
+			reply(bot, msg, "PIN is not configured. Ask the bot owner.")
 			return false
 		}
 		reply(bot, msg, "Invalid PIN.")

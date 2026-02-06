@@ -1,0 +1,30 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REPO_URL: ${REPO_URL:-https://github.com/giufus/coupons_sharing_bot.git}
+        REPO_REF: ${REPO_REF:-develop}
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_PIN: ${BOT_PIN}
+      BOT_PIN_HASH: ${BOT_PIN_HASH}
+      DB_PATH: /data/coupons.db
+    volumes:
+      - sqlite_data:/data
+    restart: unless-stopped
+
+  # Optional helper container to inspect the SQLite DB.
+  sqlite:
+    image: nouchka/sqlite3:latest
+    profiles: ["tools"]
+    volumes:
+      - sqlite_data:/data
+    entrypoint: ["sqlite3"]
+    command: ["/data/coupons.db"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  sqlite_data: {}

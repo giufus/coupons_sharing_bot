@@ -3,7 +3,13 @@
 ## Setup
 
 1. Create a bot with BotFather and get the token.
-2. Set the global PIN in the DB (stores a bcrypt hash):
+2. Set the global PIN (recommended: via env var):
+
+```bash
+export BOT_PIN="1234"
+```
+
+Alternative (store a bcrypt hash in SQLite):
 
 ```bash
 go run . pin-set --db coupons.db --pin 1234
@@ -37,12 +43,13 @@ Notes:
 - `platform` search is case-insensitive and supports partial match.
 - The on-screen reply keyboard shows Add/Search/Help/Cancel while chatting in private.
 - You must provide the global PIN before add/search (flows ask for PIN first).
-- The PIN is global (shared), stored in `configurations` as a hash. You must insert it manually.
+- The PIN is global (shared). Configure it with `BOT_PIN` (or store a bcrypt hash in `configurations`).
 
 ## Data
 
 SQLite tables:
 - `coupons`
 - `coupon_stars`
+- `configurations`
 
 Indexes are created on `platform`, `year`, `month`, and `(platform, year, month)` to speed up searches.

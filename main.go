@@ -36,6 +36,16 @@ func main() {
 	if err := migrate(db); err != nil {
 		log.Fatalf("migrate: %v", err)
 	}
+	if err := validatePinConfig(); err != nil {
+		log.Fatal("PIN misconfigured: set BOT_PIN=1234 (4 digits) OR BOT_PIN_HASH (bcrypt). Do not set both.")
+	}
+	ok, err := isGlobalPinConfigured(db)
+	if err != nil {
+		log.Fatalf("pin check: %v", err)
+	}
+	if !ok {
+		log.Fatal("PIN is not configured. Set BOT_PIN in env (recommended for Docker) or run: go run . pin-set --db coupons.db --pin 1234")
+	}
 
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
